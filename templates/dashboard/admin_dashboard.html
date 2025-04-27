@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container-fluid text-center my-3">
+    <img src="{% static 'assets/logo.png' %}" class="img-fluid" alt="Logo" style="max-width: 200px;">
+</div>
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 fw-bold">Admin Dashboard</h1>
+    </div>
+    <div id="activeTicketsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+        <div class="carousel-inner">
+            {% for ticket in active_tickets_list %}
+            {% if forloop.counter0|divisibleby:3 %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="row">
+            {% endif %}
+                <div class="col-md-4">
+                    <div class="card h-100 mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ ticket.ticket_title }} #{{ ticket.ticket_id }}</h5>
+                            <p class="card-text">
+                                {% if ticket.status == 'Pending' %}
+                                <span class="badge bg-danger">Pending</span>
+                                {% elif ticket.status == 'Active' %}
+                                <span class="badge bg-warning">Active</span>
+                                {% elif ticket.status == 'Resolved' %}
+                                <span class="badge bg-success">Resolved</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <a href="{% url 'ticket-details' ticket.ticket_id %}" class="btn btn-primary btn-sm">View Details</a>
+                        <div class="card-footer">
+                            <small class="text-muted">Created {{ ticket.created_on|naturaltime }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% if forloop.counter|divisibleby:3 or forloop.last %}
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="p-3 mb-4 bg-light rounded-3 text-center">
+                <h2 class="display-7 fw-bold">Total Tickets<br>{{ total_tickets }}</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-3 mb-4 bg-light rounded-3 text-center">
+                <h2 class="display-7 fw-bold">Unresolved Tickets<br>{{ unresolved_tickets }}</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-3 mb-4 bg-light rounded-3 text-center">
+                <h2 class="display-7 fw-bold">Resolved Tickets<br>{{ resolved_tickets }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="text-left mb-4">
+                <h2 class="display-7 fw-bold">Engineer Tickets</h2>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Engineer</th>
+                        <th scope="col">Active Tickets</th>
+                        <th scope="col">Resolved Tickets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for engineer in engineer_tickets %}
+                    <tr>
+                        <td>{{ engineer.name }}</td>
+                        <td>{{ engineer.active_tickets }}</td>
+                        <td>{{ engineer.resolved_tickets }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="text-left mb-4">
+                <h2 class="display-7 fw-bold">Customer Tickets</h2>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Active Tickets</th>
+                        <th scope="col">Resolved Tickets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customer_tickets %}
+                    <tr>
+                        <td>{{ customer.name }}</td>
+                        <td>{{ customer.active_tickets }}</td>
+                        <td>{{ customer.resolved_tickets }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <div class="text-left mb-4">
+                <h2 class="display-7 fw-bold">Tickets Overview</h2>
+                <div class="p-4 bg-light rounded-3">
+                    <canvas id="ticketChart" width="400" height="375"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% block js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const ctx = document.getElementById('ticketChart');
+  const res = {{resolved_tickets | safe}};
+  const unres = {{unresolved_tickets | safe}};
+
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: [
+            'Resolved Tickets',
+            'Unresolved Tickets'
+        ],
+        datasets: [{
+            label: 'Total Tickets',
+            data: [res, unres],
+            backgroundColor: [
+                'rgb(0, 180, 0)',
+                'rgb(180, 0, 0)'
+            ],
+            hoverOffset: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(tooltipItem) {
+                        return tooltipItem.label + ': ' + tooltipItem.raw;
+                    }
+                }
+            }
+        }
+    }
+  });
+</script>
+{% endblock %}
+{% endblock content %}

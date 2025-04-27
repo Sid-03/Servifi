@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid text-center my-3">
+    <img src="{% static 'assets/logo.png' %}" class="img-fluid" alt="Logo" style="max-width: 150px;">
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-5 text-center">
+        <div class="py-3">
+            <h1 class="display-6 fw-bold">{{ticket.ticket_title}}</h1>
+            {% if ticket.status == 'Pending' %}
+            <span class="badge bg-danger">Pending</span>
+            {% elif ticket.status == 'Active' %}
+            <span class="badge bg-warning">Active</span>
+            {% elif ticket.status == 'Resolved' %}
+            <span class="badge bg-success">Resolved</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center">
+            <div class="card-body">
+                <div class="py-3">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Ticket ID</th>
+                                <td>{{ticket.ticket_id}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Customer</th>
+                                <td>{{ticket.customer}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Engineer</th>
+                                <td>{{ticket.engineer}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Created On</th>
+                                <td>{{ticket.created_on}}</td>
+                            </tr>
+                            {% if ticket.is_resolved %}
+                            <tr>
+                                <th scope="row">Resolved On</th>
+                                <td>{{ticket.last_modified}}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">More About the Ticket</h5>
+                <p class="card-text">{{ticket.ticket_description}}</p>
+                {% if ticket.is_resolved %}
+                <div class="mt-4">
+                    <h5 class="card-title">Resolution Steps</h5>
+                    <p class="card-text">{{ticket.resolution_steps}}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% if not ticket.is_resolved and request.user.is_engineer %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-5 text-center">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#resolveModal">
+            Mark As Resolved
+        </button>
+    </div>
+</div>
+<div class="modal fade" id="resolveModal" tabindex="-1" aria-labelledby="resolveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resolveModalLabel">Resolution Steps</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'resolve-ticket' ticket.ticket_id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="resolutionSteps" class="form-label">Here's how the issue was resolved</label>
+                        <textarea class="form-control" id="resolutionSteps" rows="3" name="rs"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

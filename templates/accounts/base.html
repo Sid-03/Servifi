@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <title>Servify</title>
+    <style>
+        .logo-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logo-container img {
+            max-height: 60px;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        .welcome-message {
+            max-width: 1000px;
+            margin: auto;
+            padding: 2rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="{% static 'assets/logo.png' %}" alt="Logo">
+    </div>
+    <div class="container mt-5">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            <b>{{ message }}</b>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}
+        {% endblock content %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+</body>
+</html>
