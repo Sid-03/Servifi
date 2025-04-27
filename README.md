@@ -73,7 +73,7 @@ servifi/
 - **Static & Templates:** Place your static files in `static/` and HTML templates in `templates/`.
 
 ## License
-This project is for demonstration and development purposes. Please update this section with your preferred license.
+MIT License
 
 ---
 
